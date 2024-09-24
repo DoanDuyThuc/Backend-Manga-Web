@@ -2,6 +2,7 @@ const { VerifyRefreshToken } = require('../Services/JwtService');
 const {
     SignInService,
     LoginService,
+    GetProfileService,
 } = require('../Services/userService');
 
 
@@ -98,10 +99,24 @@ const UploadImageController = async (req, res) => {
     }
 }
 
+const GetProfileController = async (req, res) => {
+
+    const { id } = req.params;
+
+    const info = await GetProfileService(id);
+
+    if (info.error) {
+        return res.status(400).json(info);
+    }
+
+    return res.status(200).json(info);
+}
+
 module.exports = {
     LoginController,
     SignInController,
     refreshToken,
     LogoutController,
-    UploadImageController
+    UploadImageController,
+    GetProfileController
 };

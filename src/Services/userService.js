@@ -108,7 +108,40 @@ const LoginService = async ({ email, password }) => {
     }
 }
 
+const GetProfileService = async (id) => {
+    try {
+        const account = await db.User.findOne({
+            where: {
+                id
+            },
+            attributes: {
+                exclude: ['password']
+            }
+        });
+
+        if (!account) {
+            return {
+                error: true,
+                message: 'Không Tìm Thấy User !'
+            }
+        }
+
+        return {
+            error: false,
+            data: account,
+            message: 'Lấy Thông Tin Thành Công !'
+        }
+    } catch (error) {
+        console.log(error);
+        return {
+            error: true,
+            message: 'Có Lỗi Xảy Ra !'
+        }
+    }
+}
+
 module.exports = {
     SignInService,
-    LoginService
+    LoginService,
+    GetProfileService
 }

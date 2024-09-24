@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   TheLoai.init({
-    theloai_ten: {
+    ten_theloai: {
       type: DataTypes.STRING,
       allowNull: false,
     },
