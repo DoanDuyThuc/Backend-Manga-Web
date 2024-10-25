@@ -54,6 +54,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       defaultValue: 0, // Mặc định là 0 lượt xem
       allowNull: false
+    },
+    truyen_duyet: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false
     }
   }, {
     sequelize,

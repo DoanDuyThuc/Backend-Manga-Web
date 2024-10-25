@@ -1,6 +1,9 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
+const util = require('util');
+const verifyToken = util.promisify(jwt.verify);
+
 //tạo ra accsettoken
 const genneralAccessToken = async (payload) => {
     const access_token = await jwt.sign({
@@ -21,35 +24,29 @@ const genneralRefreshToken = async (payload) => {
 //xác thực token khi hết hạn
 const VerifyRefreshToken = async (token, res) => {
     try {
-        jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, async (err, user) => {
+        // Sử dụng await để chờ verify token
+        const decoded = await verifyToken(token, process.env.REFRESH_TOKEN_SECRET);
 
-            if (err) {
-                return res.status(401).json({
-                    status: "ERROR",
-                    massage: "xác thực Thất Bại",
-                })
-            }
+        const { payload } = decoded;
 
-            const { payload } = user;
+        const access_token = await genneralAccessToken({
+            id: payload?.id,
+            role: payload?.role
+        });
 
-            const access_token = await genneralAccessToken({
-                id: payload?.id,
-                role: payload?.role
-            });
+        return res.status(200).json({
+            status: "OK",
+            message: "Xác thực thành công",
+            access_token
+        });
 
-            return res.status(200).json({
-                status: "OK",
-                massage: "xác thực SUSSCES",
-                access_token
-            })
-        })
-
-    } catch (error) {
-        return {
-            status: "err",
-            massage: 'có lỗi khi xác thực !',
-            error
-        }
+    } catch (err) {
+        // Nếu có lỗi trong quá trình verify
+        return res.status(401).json({
+            status: "ERROR",
+            message: "Xác thực thất bại",
+            error: err.message
+        });
     }
 }
 

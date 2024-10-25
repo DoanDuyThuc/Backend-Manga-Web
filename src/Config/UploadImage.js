@@ -4,8 +4,21 @@ const fs = require('fs');
 
 // Tạo cấu hình lưu trữ Multer để lưu ảnh trong thư mục 'public/images/comics'
 const storage = multer.diskStorage({
+
     destination: function (req, file, cb) {
-        const dir = path.join(__dirname, '../../public/Ucomics');
+        let dir;
+        // Kiểm tra loại ảnh từ request body hoặc query
+        if (req.body && req.body.type === 'avatar') {
+            dir = path.join(__dirname, '../../public/avatars'); // Thư mục lưu ảnh avatar
+        } else if (req.body && req.body.type === 'comic') {
+            dir = path.join(__dirname, '../../public/Ucomics'); // Thư mục lưu truyện tranh
+        } else if (req.body && req.body.type === 'chapter') {
+            dir = path.join(__dirname, '../../public/Chapters'); // Thư mục lưu chương truyện
+        } else {
+            // Nếu không có type nào hợp lệ thì trả về lỗi
+            return cb(new Error('Invalid upload type'));
+        }
+
         // Tạo thư mục nếu chưa tồn tại
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });

@@ -8,6 +8,7 @@ const path = require('path');
 
 const router = require('./Routes/index')
 const ConnectDb = require('./Config/ConnectDb')
+const errorUpload = require('./Middlewares/errorUpload')
 
 
 require('dotenv').config()
@@ -19,7 +20,16 @@ const app = express()
 
 //config
 // Cấu hình CORS(Cross-Origin Resource Sharing) 
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:3000', // Cho phép truy cập từ frontend
+    credentials: true // Nếu bạn sử dụng cookies hoặc headers đặc biệt
+}));
+
+// Middleware helmet để thiết lập các tiêu đề HTTP bảo mật
+app.use(helmet());
+
+// Sử dụng path.join để tạo đường dẫn tuyệt đối tới thư mục public/Ucomics
+app.use('/public', express.static(path.join(__dirname, '../public')));
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -33,11 +43,8 @@ app.use(cookieParser())
 // morgan để ghi lại log của các yêu cầu HTTP
 app.use(morgan('dev'));
 
-// Middleware helmet để thiết lập các tiêu đề HTTP bảo mật
-app.use(helmet());
-
-// Sử dụng path.join để tạo đường dẫn tuyệt đối tới thư mục public/Ucomics
-app.use('/public/Ucomics', express.static(path.join(__dirname, '../public/Ucomics')));
+//lỗi upload ảnh
+app.use(errorUpload);
 
 // Router
 router(app)

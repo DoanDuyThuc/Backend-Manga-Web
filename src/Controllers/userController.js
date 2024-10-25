@@ -3,6 +3,12 @@ const {
     SignInService,
     LoginService,
     GetProfileService,
+    UpdateUserService,
+    ChangePasswordService,
+    GetAllUserService,
+    DeleteUserService,
+    GetInfoUpdateService,
+    UpdateInfoUserService
 } = require('../Services/userService');
 
 
@@ -101,7 +107,7 @@ const UploadImageController = async (req, res) => {
 
 const GetProfileController = async (req, res) => {
 
-    const { id } = req.params;
+    const { id } = req.user;
 
     const info = await GetProfileService(id);
 
@@ -112,11 +118,106 @@ const GetProfileController = async (req, res) => {
     return res.status(200).json(info);
 }
 
+const UpdateUserController = async (req, res) => {
+    const { id } = req.user;
+
+    const { username } = req.body;
+
+    let pathAvatar;
+
+    if (req.file) {
+        const file = req.file;
+        pathAvatar = `/avatars/${file.filename}`;  // Gán đường dẫn avatar mới
+    }
+
+    const newInfo = await UpdateUserService(id, username, pathAvatar);
+
+    if (newInfo.error) {
+        return res.status(400).json(newInfo);
+    }
+
+    return res.status(200).json(newInfo);
+}
+
+const ChangePasswordController = async (req, res) => {
+    const { id } = req.user;
+
+    const { oldPassword, newPassword } = req.body;
+
+    const result = await ChangePasswordService(id, oldPassword, newPassword);
+
+    if (result.error) {
+        return res.status(400).json(result);
+    }
+
+    return res.status(200).json(result);
+}
+
+const GetAllUserController = async (req, res) => {
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const search = req.query.search || '';
+
+    const users = await GetAllUserService({ limit, page, search });
+
+    if (users.error) {
+        return res.status(400).json(users);
+    }
+
+    return res.status(200).json(users);
+
+}
+
+const DeleteUserController = async (req, res) => {
+    const { ids } = req.body;
+
+    const result = await DeleteUserService(ids);
+
+    if (result.error) {
+        return res.status(400).json(result);
+    }
+
+    return res.status(200).json(result);
+}
+
+const GetInfoUpdateController = async (req, res) => {
+    const { id } = req.params;
+
+    const info = await GetInfoUpdateService(id);
+
+    if (info.error) {
+        return res.status(400).json(info);
+    }
+
+    return res.status(200).json(info);
+}
+
+const UpdateInfoUserController = async (req, res) => {
+    const { id } = req.params;
+
+    const { username, email, role, point } = req.body;
+
+    const result = await UpdateInfoUserService(id, username, email, role, point);
+
+    if (result.error) {
+        return res.status(400).json(result);
+    }
+
+    return res.status(200).json(result);
+}
+
 module.exports = {
     LoginController,
     SignInController,
     refreshToken,
     LogoutController,
     UploadImageController,
-    GetProfileController
+    GetProfileController,
+    UpdateUserController,
+    ChangePasswordController,
+    GetAllUserController,
+    DeleteUserController,
+    GetInfoUpdateController,
+    UpdateInfoUserController
 };

@@ -44,7 +44,9 @@ const authAccountMiddleware = (req, res, next) => {
         const { payload } = user;
         req.user = payload;
 
-        if (payload?.role === 'admin' || payload?.id === Number(userId)) {
+        // || payload?.id === Number(userId)
+
+        if (payload?.role === 'admin' || payload?.role === 'user' || payload?.role === 'author') {
             next();
         } else {
             return res.status(401).json({

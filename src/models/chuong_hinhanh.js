@@ -25,6 +25,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
+    sort_order: { // Thêm trường sort_order
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0 // Giá trị mặc định nếu không có thứ tự
+    }
   }, {
     sequelize,
     modelName: 'chuong_hinhanh',
