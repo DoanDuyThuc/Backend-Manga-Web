@@ -16,6 +16,18 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       Truyen.belongsToMany(models.TheLoai, { through: 'TruyenTheloai' });
+
+      Truyen.belongsTo(models.User, {
+        foreignKey: 'UserId',
+      });
+
+      Truyen.hasMany(models.TruyenYeuThich, {
+        foreignKey: 'TruyenId',
+      });
+
+      Truyen.hasMany(models.TruyenLichSu, {
+        foreignKey: 'TruyenId',
+      });
     }
   }
   Truyen.init({
@@ -58,6 +70,19 @@ module.exports = (sequelize, DataTypes) => {
     truyen_duyet: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
+      allowNull: false
+    },
+    quoc_gia: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    isOver: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false
+    },
+    UserId: {
+      type: DataTypes.INTEGER,
       allowNull: false
     }
   }, {

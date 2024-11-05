@@ -34,19 +34,11 @@ const VerifyRefreshToken = async (token, res) => {
             role: payload?.role
         });
 
-        return res.status(200).json({
-            status: "OK",
-            message: "Xác thực thành công",
-            access_token
-        });
+        return { status: "OK", message: "Xác thực thành công", access_token };
 
     } catch (err) {
         // Nếu có lỗi trong quá trình verify
-        return res.status(401).json({
-            status: "ERROR",
-            message: "Xác thực thất bại",
-            error: err.message
-        });
+        return { status: "ERROR", message: "Xác thực thất bại", error: err.message };
     }
 }
 

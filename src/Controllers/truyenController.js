@@ -23,7 +23,7 @@ const {
 } = require("../Services/truyenService");
 
 const CreateTruyenController = async (req, res) => {
-    const { truyen_ma, truyen_ten, truyen_tacgia, truyen_motangan } = req.body;
+    const { truyen_ma, truyen_ten, truyen_tacgia, truyen_motangan, quoc_gia, UserId } = req.body;
 
     let truyen_hinhanhdaidien;
     if (req.file) {
@@ -32,7 +32,7 @@ const CreateTruyenController = async (req, res) => {
     }
 
 
-    const newTruyen = await CreateTruyenService({ truyen_ma, truyen_ten, truyen_hinhanhdaidien, truyen_tacgia, truyen_motangan });
+    const newTruyen = await CreateTruyenService({ truyen_ma, truyen_ten, truyen_hinhanhdaidien, truyen_tacgia, truyen_motangan, quoc_gia, UserId });
 
     if (newTruyen.error) {
         return res.status(400).json(newTruyen);
@@ -193,7 +193,9 @@ const GetChuongController = async (req, res) => {
 
     const { id } = req.params;
 
-    const chuong = await GetChuongService({ id });
+    const { ChuongId } = req.query;
+
+    const chuong = await GetChuongService({ id, ChuongId });
 
     if (chuong.error) {
         return res.status(400).json(chuong);
@@ -217,7 +219,7 @@ const DeleteTruyenController = async (req, res) => {
 }
 
 const UpdateTruyenController = async (req, res) => {
-    const { truyen_ten, truyen_tacgia, truyen_motangan, truyen_duyet } = req.body;
+    const { truyen_ten, truyen_tacgia, truyen_motangan, quoc_gia, isOver, truyen_duyet } = req.body;
 
     const { truyen_ma } = req.params;
 
@@ -227,7 +229,7 @@ const UpdateTruyenController = async (req, res) => {
         truyen_hinhanhdaidien = `/Ucomics/${file.filename}`;  // Gán đường dẫn avatar mới
     }
 
-    const newTruyen = await UpdateTruyenService({ truyen_ma, truyen_ten, truyen_hinhanhdaidien, truyen_tacgia, truyen_motangan, truyen_duyet });
+    const newTruyen = await UpdateTruyenService({ truyen_ma, truyen_ten, truyen_hinhanhdaidien, truyen_tacgia, truyen_motangan, quoc_gia, isOver, truyen_duyet });
 
     if (newTruyen.error) {
         return res.status(400).json(newTruyen);
@@ -282,9 +284,12 @@ const UpdateSortImageController = async (req, res) => {
 
 const UpdateInfoChuongController = async (req, res) => {
     const { id } = req.params;
-    const { Chuong_so, Chuong_ten, Chuong_noidung } = req.body;
+    const { Chuong_so, Chuong_ten, Chuong_noidung, TruyenId } = req.body;
 
-    const result = await UpdateInfoChuongService({ id, Chuong_so, Chuong_ten, Chuong_noidung });
+    console.log(id, Chuong_so, Chuong_ten, Chuong_noidung, TruyenId);
+
+
+    const result = await UpdateInfoChuongService({ id, Chuong_so, Chuong_ten, Chuong_noidung, TruyenId });
 
     if (result.error) {
         return res.status(400).json(result);

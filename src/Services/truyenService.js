@@ -8,7 +8,7 @@ const { Op } = require('sequelize');
 const unlinkFile = util.promisify(fs.unlink);
 
 
-const CreateTruyenService = async ({ truyen_ma, truyen_ten, truyen_hinhanhdaidien, truyen_tacgia, truyen_motangan }) => {
+const CreateTruyenService = async ({ truyen_ma, truyen_ten, truyen_hinhanhdaidien, truyen_tacgia, truyen_motangan, quoc_gia, UserId }) => {
     try {
 
         //check truyen tồn tại
@@ -30,7 +30,9 @@ const CreateTruyenService = async ({ truyen_ma, truyen_ten, truyen_hinhanhdaidie
             truyen_ten,
             truyen_hinhanhdaidien,
             truyen_tacgia,
-            truyen_motangan
+            truyen_motangan,
+            quoc_gia,
+            UserId
         });
 
         return {
@@ -104,7 +106,7 @@ const GetTruyenService = async ({ truyen_ma }) => {
             include: [
                 {
                     model: db.Chuong,
-                    attributes: ['id', 'Chuong_so', 'Chuong_ten', "Chuong_noidung", 'createdAt']
+                    attributes: ['id', 'Chuong_so', 'Chuong_ten', "Chuong_noidung", 'createdAt', 'TruyenId'],
                 },
                 {
                     model: db.TheLoai,
@@ -114,7 +116,6 @@ const GetTruyenService = async ({ truyen_ma }) => {
                     }
                 }
             ],
-            attributes: ['id', 'truyen_ma', 'truyen_ten', 'truyen_hinhanhdaidien', 'truyen_tacgia', 'truyen_motangan', 'truyen_duyet', 'createdAt'],
         });
 
         if (!truyen) {
@@ -407,6 +408,21 @@ const DeleteTheLoaiForTruyenService = async ({ TruyenId, TheLoaiId }) => {
 
 const CreateChuongService = async ({ Chuong_so, Chuong_ten, Chuong_noidung, TruyenId }) => {
     try {
+
+        const chuong = await db.Chuong.findOne({
+            where: {
+                Chuong_so,
+                TruyenId
+            }
+        });
+
+        if (chuong) {  // Nếu chương đã tồn tại
+            return {
+                error: true,
+                message: 'Chương đã tồn tại'
+            };
+        }
+
         const newChuong = await db.Chuong.create({
             Chuong_so,
             Chuong_ten,
@@ -473,11 +489,13 @@ const AddImagesChuongService = async ({ ChuongId, images }) => {
     }
 }
 
-const GetChuongService = async ({ id }) => {
+const GetChuongService = async ({ id, ChuongId }) => {
     try {
+
         const chuong = await db.Chuong.findOne({
             where: {
-                id
+                id,
+                Chuong_so: ChuongId
             },
             include: [
                 {
@@ -486,7 +504,6 @@ const GetChuongService = async ({ id }) => {
                     order: [['sort_order', 'ASC']],
                 }
             ],
-            attributes: ['Chuong_so', 'Chuong_ten', 'Chuong_noidung', 'createdAt']
         });
 
         if (!chuong) {
@@ -603,6 +620,8 @@ const UpdateTruyenService = async ({
     truyen_hinhanhdaidien,
     truyen_tacgia,
     truyen_motangan,
+    quoc_gia,
+    isOver,
     truyen_duyet
 }) => {
     try {
@@ -657,6 +676,8 @@ const UpdateTruyenService = async ({
             truyen_ten,
             truyen_tacgia,
             truyen_motangan,
+            quoc_gia,
+            isOver,
             truyen_duyet
         };
 
@@ -819,19 +840,37 @@ const UpdateSortImageService = async ({ id, images }) => {
     }
 }
 
-const UpdateInfoChuongService = async ({ id, Chuong_so, Chuong_ten, Chuong_noidung }) => {
+const UpdateInfoChuongService = async ({ id, Chuong_so, Chuong_ten, Chuong_noidung, TruyenId }) => {
     try {
 
-        const chuong = await db.Chuong.findOne({
+        const currentChuong = await db.Chuong.findOne({
             where: {
-                id
+                id,
+                TruyenId
             }
         });
 
-        if (!chuong) {
+        if (!currentChuong) {
             return {
                 error: true,
-                message: 'Không tìm thấy chương !'
+                message: 'Chương không tồn tại'
+            };
+        }
+
+        const isChuongExists = await db.Chuong.findOne({
+            where: {
+                Chuong_so,
+                TruyenId,
+                id: {
+                    [Sequelize.Op.ne]: currentChuong.id
+                }
+            }
+        })
+
+        if (isChuongExists) {
+            return {
+                error: true,
+                message: 'Chương đã tồn tại'
             }
         }
 
@@ -841,13 +880,15 @@ const UpdateInfoChuongService = async ({ id, Chuong_so, Chuong_ten, Chuong_noidu
             Chuong_noidung
         }, {
             where: {
-                id
+                id,
+                TruyenId
             }
         });
 
         const updatedChuong = await db.Chuong.findOne({
             where: {
-                id
+                Chuong_so: id,
+                TruyenId
             }
         });
 
@@ -861,7 +902,7 @@ const UpdateInfoChuongService = async ({ id, Chuong_so, Chuong_ten, Chuong_noidu
         console.log(error);
         return {
             error: true,
-            message: 'Internal Server Error'
+            message: 'Không thành công có thể do trùng chương vui lòng đặt khác chương hiện có'
         }
 
     }

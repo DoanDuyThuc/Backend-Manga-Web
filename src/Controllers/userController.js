@@ -63,10 +63,16 @@ const refreshToken = async (req, res) => {
                 massage: "không tìm thấy token !"
             })
         }
-        return await VerifyRefreshToken(token, res)
+        const result = await VerifyRefreshToken(token, res)
+
+        if (result.status === "ERROR") {
+            return res.status(401).json(result);
+        }
+
+        return res.status(200).json(result);
     } catch (error) {
         console.log(error);
-        return res.status(400).json({
+        return res.status(401).json({
             status: "err",
             massage: 'có lỗi khi xác thực !',
             error
