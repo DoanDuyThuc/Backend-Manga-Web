@@ -12,7 +12,9 @@ const {
     GetAllUserController,
     DeleteUserController,
     GetInfoUpdateController,
-    UpdateInfoUserController
+    UpdateInfoUserController,
+    ForgotPasswordController,
+    ResetPasswordController
 } = require('../Controllers/userController');
 const upload = require('../Config/UploadImage');
 const { authAccountMiddleware, authMiddleware } = require('../Middlewares/auth');
@@ -31,6 +33,10 @@ router.get('/getAllUser', authMiddleware, GetAllUserController);
 router.delete('/deleteUser', authMiddleware, DeleteUserController);
 router.get('/getInfoupdate/:id', authMiddleware, GetInfoUpdateController);
 router.put('/updateInfoUser/:id', authMiddleware, UpdateInfoUserController);
+
+router.post('/forgot-password', ForgotPasswordController);
+router.post('/resetPassword', authAccountMiddleware, ResetPasswordController);
+
 
 
 module.exports = router;

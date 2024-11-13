@@ -28,6 +28,11 @@ module.exports = (sequelize, DataTypes) => {
       Truyen.hasMany(models.TruyenLichSu, {
         foreignKey: 'TruyenId',
       });
+
+      Truyen.hasMany(models.Comment, {
+        foreignKey: 'TruyenId',
+      });
+
     }
   }
   Truyen.init({

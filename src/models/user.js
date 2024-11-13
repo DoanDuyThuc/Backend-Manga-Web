@@ -22,6 +22,14 @@ module.exports = (sequelize, DataTypes) => {
       User.hasMany(models.TruyenLichSu, {
         foreignKey: 'UserId',
       });
+
+      User.hasMany(models.Comment, {
+        foreignKey: 'UserId',
+      });
+
+      User.hasMany(models.RepComment, {
+        foreignKey: 'UserId'
+      });
     }
   }
   User.init({

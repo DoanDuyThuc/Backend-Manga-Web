@@ -4,6 +4,7 @@ const fs = require('fs');
 const { genneralAccessToken, genneralRefreshToken } = require('./JwtService');
 const path = require('path');
 const { Op } = require('sequelize');
+const sendPasswordResetEmail = require('../Config/SendEmailResetPass');
 
 const SignInService = async ({ username, email, password }) => {
 
@@ -450,6 +451,87 @@ const UpdateInfoUserService = async (id, username, email, role, point) => {
     }
 }
 
+const ForgotPasswordService = async ({ email }) => {
+    try {
+
+        const account = await db.User.findOne({
+            where: {
+                email
+            }
+        });
+
+        if (!account) {
+            return {
+                error: true,
+                message: 'Email Không Tồn Tại !'
+            }
+        }
+
+        const resetToken = await genneralAccessToken({
+            id: account.id,
+            role: account.role,
+        });
+
+        // Gửi email
+        await sendPasswordResetEmail(email, resetToken);
+
+        return {
+            error: false,
+            message: `Email Đã Được Gửi tới hòm thư của ${account.email} !`
+        }
+
+    } catch (error) {
+        console.log(error);
+        return {
+            error: true,
+            message: 'Có Lỗi Xảy Ra !'
+        }
+    }
+}
+
+const ResetPasswordService = async ({ id, password }) => {
+    try {
+
+        const account = await db.User.findOne({
+            where: {
+                id
+            }
+        });
+
+        if (!account) {
+            return {
+                error: true,
+                message: 'Người dùng không tồn tại !'
+            }
+        }
+
+        const saltRounds = 10;
+        const salt = bcrypt.genSaltSync(saltRounds);
+        const hash = bcrypt.hashSync(password, salt);
+
+        await db.User.update({
+            password: hash
+        }, {
+            where: {
+                id
+            }
+        });
+
+        return {
+            error: false,
+            message: 'Đổi Mật Khẩu Thành Công !'
+        }
+
+    } catch (error) {
+        console.log(error);
+        return {
+            error: true,
+            message: 'Có Lỗi Xảy Ra !'
+        }
+
+    }
+}
+
 module.exports = {
     SignInService,
     LoginService,
@@ -459,5 +541,7 @@ module.exports = {
     GetAllUserService,
     DeleteUserService,
     GetInfoUpdateService,
-    UpdateInfoUserService
+    UpdateInfoUserService,
+    ForgotPasswordService,
+    ResetPasswordService
 }

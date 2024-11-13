@@ -11,7 +11,16 @@ const {
     AddLichSuTruyenController,
     DeleteLichSuTruyenController,
     GetAllLichSuTruyenController,
-    UpdateLuotXemController
+    UpdateLuotXemController,
+    CreateCommentController,
+    UpdateCommentController,
+    DeleteCommentController,
+    GetAllCommentController,
+    CreateRepCommentController,
+    GetAllCommentOfUserController,
+    UpdateStatusCommentOfUserController,
+    DeleteRepCommentController,
+    UpdateRepCommentController
 } = require('../Controllers/HomeController');
 
 const { authAccountMiddleware, authMiddleware } = require('../Middlewares/auth');
@@ -29,6 +38,20 @@ router.delete('/deleteLichSuTruyen', authAccountMiddleware, DeleteLichSuTruyenCo
 
 router.post('/updateLuotXem', UpdateLuotXemController);
 
+//comments
+router.post('/createComment', authAccountMiddleware, CreateCommentController);
+router.patch('/updateComment', authAccountMiddleware, UpdateCommentController);
+router.delete('/deleteComment', authAccountMiddleware, DeleteCommentController);
+router.get('/getAllComment', GetAllCommentController);
+
+//repcomments
+router.post('/createRepComment', authAccountMiddleware, CreateRepCommentController);
+router.delete('/deleteRepComment', authAccountMiddleware, DeleteRepCommentController);
+router.patch('/updateRepComment', authAccountMiddleware, UpdateRepCommentController);
+
+//thông báo
+router.get('/getAllCommentOfUser', authAccountMiddleware, GetAllCommentOfUserController);
+router.patch('/updateStatusCommentOfUser', authAccountMiddleware, UpdateStatusCommentOfUserController);
 
 
 module.exports = router;

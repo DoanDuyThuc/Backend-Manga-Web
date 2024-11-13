@@ -480,6 +480,341 @@ const UpdateLuotXemService = async ({ truyen_id }) => {
     }
 }
 
+const CreateCommentService = async ({ user_id, truyen_id, content }) => {
+    try {
+        const CreateComment = await db.Comment.create({
+            UserId: user_id,
+            TruyenId: truyen_id,
+            content
+        });
+
+        if (!CreateComment) {
+            return {
+                error: true,
+                message: 'Lỗi khi tạo bình luận'
+            }
+        }
+
+        return {
+            error: false,
+            data: CreateComment,
+            message: 'Tạo bình luận thành công'
+        }
+
+    } catch (error) {
+        console.log(error);
+        return {
+            error: true,
+            message: 'Internal Server Error'
+        }
+
+    }
+}
+
+const UpdateCommentService = async ({ comment_id, content }) => {
+    try {
+        const UpdateComment = await db.Comment.update({
+            content
+        }, {
+            where: {
+                id: comment_id
+            }
+        });
+
+        if (!UpdateComment) {
+            return {
+                error: true,
+                message: 'Lỗi khi cập nhật bình luận'
+            }
+        }
+
+        return {
+            error: false,
+            message: 'Cập nhật bình luận thành công'
+        }
+
+    } catch (error) {
+        console.log(error);
+        return {
+            error: true,
+            message: 'Internal Server Error'
+        }
+
+    }
+}
+
+const DeleteCommentService = async ({ comment_id }) => {
+    try {
+
+        const repComments = await db.RepComment.findAll({
+            where: {
+                CommentId: comment_id
+            }
+        });
+
+
+        const DeleteComment = await db.Comment.destroy({
+            where: {
+                id: comment_id
+            }
+        });
+
+        if (repComments.length > 0) {
+            await db.RepComment.destroy({
+                where: {
+                    CommentId: comment_id
+                }
+            });
+        }
+
+        if (!DeleteComment) {
+            return {
+                error: true,
+                message: 'Lỗi khi xóa bình luận'
+            }
+        }
+
+        return {
+            error: false,
+            message: 'Xóa bình luận thành công'
+        }
+
+    } catch (error) {
+        console.log(error);
+        return {
+            error: true,
+            message: 'Internal Server Error'
+        }
+
+    }
+}
+
+const GetAllCommentService = async ({ truyen_id }) => {
+    try {
+
+        const Comments = await db.Comment.findAll({
+            where: {
+                TruyenId: truyen_id
+            },
+            include: [
+                {
+                    model: db.User,
+                    attributes: ['id', 'username', 'avatar', 'role']
+                },
+                {
+                    model: db.RepComment,
+                    attributes: ['id', 'content', 'createdAt'],
+                    include: [
+                        {
+                            model: db.User,
+                            attributes: ['id', 'username', 'avatar', 'role']
+                        }
+                    ]
+                }
+            ]
+        });
+
+        if (!Comments) {
+            return {
+                error: true,
+                message: 'Không tìm thấy bình luận'
+            }
+        }
+
+        return {
+            error: false,
+            data: Comments,
+            message: 'Lấy dữ liệu thành công'
+        }
+
+    } catch (error) {
+        console.log(error);
+        return {
+            error: true,
+            message: 'Internal Server Error'
+        }
+
+    }
+}
+
+const CreateRepCommentService = async ({ user_id, comment_id, content }) => {
+    try {
+        const CreateRepComment = await db.RepComment.create({
+            UserId: user_id,
+            CommentId: comment_id,
+            content
+        });
+
+        if (!CreateRepComment) {
+            return {
+                error: true,
+                message: 'Lỗi khi tạo trả lời bình luận'
+            }
+        }
+
+        return {
+            error: false,
+            data: CreateRepComment,
+            message: 'Tạo trả lời bình luận thành công'
+        }
+
+    } catch (error) {
+        console.log(error);
+        return {
+            error: true,
+            message: 'Internal Server Error'
+        }
+
+    }
+}
+
+const GetAllCommentOfUserService = async ({ user_id }) => {
+    try {
+
+        const CommentOfUser = await db.Comment.findAll({
+            where: {
+                '$Truyen.truyen_duyet$': 1,
+                '$Truyen.userId$': user_id
+            },
+            attributes: ['id', 'content', 'IsRead', 'IsShow', 'createdAt'],
+            include: [
+                {
+                    model: db.Truyen,
+                    attributes: ['id', 'truyen_ma', 'truyen_ten'],
+                    required: true // Đảm bảo chỉ lấy các Comment thuộc Truyen với điều kiện trên
+                },
+                {
+                    model: db.User,
+                    attributes: ['id', 'username', 'avatar', 'role']
+                },
+                // {
+                //     model: db.RepComment,
+                //     attributes: ['id', 'content', 'createdAt'],
+                //     required: false,
+                //     include: [
+                //         {
+                //             model: db.User,
+                //             attributes: ['id', 'username', 'avatar', 'role']
+                //         }
+                //     ]
+                // }
+            ]
+        });
+
+
+
+        return {
+            error: false,
+            data: CommentOfUser,
+            message: 'Lấy dữ liệu thành công'
+        }
+
+    } catch (error) {
+        console.log(error);
+        return {
+            error: true,
+            message: 'Internal Server Error'
+        }
+
+    }
+}
+
+const UpdateStatusCommentOfUserService = async ({ comment_id, IsRead, IsShow }) => {
+    try {
+        const UpdateStatusComment = await db.Comment.update({
+            IsRead,
+            IsShow
+        }, {
+            where: {
+                id: comment_id
+            }
+        });
+
+        if (!UpdateStatusComment) {
+            return {
+                error: true,
+                message: 'Lỗi khi cập nhật trạng thái bình luận'
+            }
+        }
+
+        return {
+            error: false,
+            message: 'Cập nhật trạng thái bình luận thành công'
+        }
+
+    } catch (error) {
+        console.log(error);
+        return {
+            error: true,
+            message: 'Internal Server Error'
+        }
+
+    }
+}
+
+const DeleteRepCommentService = async ({ repcomment_id }) => {
+    try {
+
+        const DeleteRepComment = await db.RepComment.destroy({
+            where: {
+                id: repcomment_id
+            }
+        });
+
+        if (!DeleteRepComment) {
+            return {
+                error: true,
+                message: 'Lỗi khi xóa trả lời bình luận'
+            }
+        }
+
+        return {
+            error: false,
+            message: 'Xóa trả lời bình luận thành công'
+        }
+
+    } catch (error) {
+        console.log(error);
+        return {
+            error: true,
+            message: 'Internal Server Error'
+        }
+
+    }
+}
+
+const UpdateRepCommentService = async ({ repcomment_id, content }) => {
+    try {
+        const UpdateRepComment = await db.RepComment.update({
+            content
+        }, {
+            where: {
+                id: repcomment_id
+            }
+        });
+
+        if (!UpdateRepComment) {
+            return {
+                error: true,
+                message: 'Lỗi khi cập nhật trả lời bình luận'
+            }
+        }
+
+        return {
+            error: false,
+            message: 'Cập nhật trả lời bình luận thành công'
+        }
+
+    } catch (error) {
+        console.log(error);
+        return {
+            error: true,
+            message: 'Internal Server Error'
+        }
+
+    }
+}
+
 module.exports = {
     GetAllTruyenHomeService,
     GetChuongHomeService,
@@ -489,5 +824,14 @@ module.exports = {
     AddLichSuTruyenService,
     DeleteLichSuTruyenService,
     GetAllLichSuTruyenService,
-    UpdateLuotXemService
+    UpdateLuotXemService,
+    CreateCommentService,
+    UpdateCommentService,
+    DeleteCommentService,
+    GetAllCommentService,
+    CreateRepCommentService,
+    GetAllCommentOfUserService,
+    UpdateStatusCommentOfUserService,
+    DeleteRepCommentService,
+    UpdateRepCommentService
 }

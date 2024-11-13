@@ -7,7 +7,16 @@ const {
     AddLichSuTruyenService,
     DeleteLichSuTruyenService,
     GetAllLichSuTruyenService,
-    UpdateLuotXemService
+    UpdateLuotXemService,
+    CreateCommentService,
+    UpdateCommentService,
+    DeleteCommentService,
+    GetAllCommentService,
+    CreateRepCommentService,
+    GetAllCommentOfUserService,
+    UpdateStatusCommentOfUserService,
+    DeleteRepCommentService,
+    UpdateRepCommentService
 } = require("../Services/HomeService");
 
 const GetAllTruyenHomeController = async (req, res) => {
@@ -125,6 +134,114 @@ const UpdateLuotXemController = async (req, res) => {
     }
 }
 
+const CreateCommentController = async (req, res) => {
+    try {
+        const { user_id, truyen_id, content } = req.body;
+
+        const truyen = await CreateCommentService({ user_id, truyen_id, content });
+
+        return res.status(200).json(truyen);
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+}
+
+const UpdateCommentController = async (req, res) => {
+    try {
+        const { comment_id, content } = req.body;
+
+        const truyen = await UpdateCommentService({ comment_id, content });
+
+        return res.status(200).json(truyen);
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+}
+
+const DeleteCommentController = async (req, res) => {
+    try {
+        const { comment_id } = req.query;
+
+        const truyen = await DeleteCommentService({ comment_id });
+
+        return res.status(200).json(truyen);
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+}
+
+const GetAllCommentController = async (req, res) => {
+    try {
+        const { truyen_id } = req.query;
+
+        const truyen = await GetAllCommentService({ truyen_id });
+
+        return res.status(200).json(truyen);
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+}
+
+const CreateRepCommentController = async (req, res) => {
+    try {
+        const { user_id, comment_id, content } = req.body;
+
+        const truyen = await CreateRepCommentService({ user_id, comment_id, content });
+
+        return res.status(200).json(truyen);
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+}
+
+const GetAllCommentOfUserController = async (req, res) => {
+    try {
+        const { user_id } = req.query;
+
+        const truyen = await GetAllCommentOfUserService({ user_id });
+
+        return res.status(200).json(truyen);
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+}
+
+const UpdateStatusCommentOfUserController = async (req, res) => {
+    try {
+        const { comment_id, IsRead, IsShow } = req.body;
+
+        const truyen = await UpdateStatusCommentOfUserService({ comment_id, IsRead, IsShow });
+
+        return res.status(200).json(truyen);
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+}
+
+const DeleteRepCommentController = async (req, res) => {
+    try {
+        const { repcomment_id } = req.query;
+
+        const truyen = await DeleteRepCommentService({ repcomment_id });
+
+        return res.status(200).json(truyen);
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+}
+
+const UpdateRepCommentController = async (req, res) => {
+    try {
+        const { repcomment_id, content } = req.body;
+
+        const truyen = await UpdateRepCommentService({ repcomment_id, content });
+
+        return res.status(200).json(truyen);
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+}
+
 module.exports = {
     GetAllTruyenHomeController,
     GetChuongHomeController,
@@ -134,5 +251,14 @@ module.exports = {
     AddLichSuTruyenController,
     DeleteLichSuTruyenController,
     GetAllLichSuTruyenController,
-    UpdateLuotXemController
+    UpdateLuotXemController,
+    CreateCommentController,
+    UpdateCommentController,
+    DeleteCommentController,
+    GetAllCommentController,
+    CreateRepCommentController,
+    GetAllCommentOfUserController,
+    UpdateStatusCommentOfUserController,
+    DeleteRepCommentController,
+    UpdateRepCommentController
 }

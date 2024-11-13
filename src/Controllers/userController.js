@@ -8,7 +8,9 @@ const {
     GetAllUserService,
     DeleteUserService,
     GetInfoUpdateService,
-    UpdateInfoUserService
+    UpdateInfoUserService,
+    ForgotPasswordService,
+    ResetPasswordService
 } = require('../Services/userService');
 
 
@@ -58,7 +60,7 @@ const refreshToken = async (req, res) => {
     try {
         const token = req.cookies.refresh_token;
         if (!token) {
-            res.status(401).json({
+            return res.status(401).json({
                 status: "err",
                 massage: "không tìm thấy token !"
             })
@@ -213,6 +215,42 @@ const UpdateInfoUserController = async (req, res) => {
     return res.status(200).json(result);
 }
 
+const ForgotPasswordController = async (req, res) => {
+    const { email } = req.body;
+
+    console.log(email);
+
+
+    if (!email) {
+        return res.status(400).json({ message: 'Không được để trống!' });
+    }
+
+    const result = await ForgotPasswordService({ email });
+
+    if (result.error) {
+        return res.status(400).json(result);
+    }
+
+    return res.status(200).json(result);
+}
+
+const ResetPasswordController = async (req, res) => {
+    const { password } = req.body;
+    const { id } = req.user;
+
+    if (!password) {
+        return res.status(400).json({ message: 'Không được để trống!' });
+    }
+
+    const result = await ResetPasswordService({ id, password });
+
+    if (result.error) {
+        return res.status(400).json(result);
+    }
+
+    return res.status(200).json(result);
+}
+
 module.exports = {
     LoginController,
     SignInController,
@@ -225,5 +263,7 @@ module.exports = {
     GetAllUserController,
     DeleteUserController,
     GetInfoUpdateController,
-    UpdateInfoUserController
+    UpdateInfoUserController,
+    ForgotPasswordController,
+    ResetPasswordController
 };

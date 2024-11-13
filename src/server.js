@@ -21,7 +21,7 @@ const app = express()
 //config
 // Cấu hình CORS(Cross-Origin Resource Sharing) 
 app.use(cors({
-    origin: 'http://localhost:3000', // Cho phép truy cập từ frontend
+    origin: `${process.env.PORT_FRONTEND}`, // Cho phép truy cập từ frontend
     credentials: true // Nếu bạn sử dụng cookies hoặc headers đặc biệt
 }));
 
