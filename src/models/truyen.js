@@ -54,7 +54,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     truyen_motangan: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: false
     },
     truyen_luotthich: {
@@ -93,6 +93,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Truyen',
+    tableName: 'Truyen',
   });
   return Truyen;
 };

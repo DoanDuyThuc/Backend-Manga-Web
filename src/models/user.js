@@ -30,6 +30,10 @@ module.exports = (sequelize, DataTypes) => {
       User.hasMany(models.RepComment, {
         foreignKey: 'UserId'
       });
+
+      User.hasMany(models.ThongBaoToAdmin, {
+        foreignKey: 'UserId'
+      });
     }
   }
   User.init({
@@ -68,6 +72,8 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'User',
+    tableName: 'User',
+
   });
   return User;
 };

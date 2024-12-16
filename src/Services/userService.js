@@ -532,6 +532,107 @@ const ResetPasswordService = async ({ id, password }) => {
     }
 }
 
+const AddThongBaoForUserService = async ({ idUser, content }) => {
+    try {
+
+        const accountUser = await db.User.findOne({
+            where: {
+                id: idUser
+            }
+        });
+
+        if (!accountUser) {
+            return {
+                error: true,
+                message: 'Người dùng không tồn tại !'
+            }
+        }
+
+        await db.ThongBaoToAdmin.create({
+            UserId: idUser,
+            content
+        });
+
+        return {
+            error: false,
+            message: 'Đã Thông Báo Đến User !'
+        }
+
+    } catch (error) {
+        console.log(error);
+        return {
+            error: true,
+            message: 'Có Lỗi Xảy Ra !'
+        }
+
+    }
+}
+
+const GetThongBaoForUserService = async ({ id }) => {
+    try {
+
+        const thongBao = await db.ThongBaoToAdmin.findAll({
+            where: {
+                UserId: id
+            },
+            order: [
+                ['createdAt', 'DESC']
+            ]
+        });
+
+        return {
+            error: false,
+            data: thongBao,
+            message: 'Lấy Thông Báo Thành Công !'
+        }
+
+    } catch (error) {
+        console.log(error);
+        return {
+            error: true,
+            message: 'Có Lỗi Xảy Ra !'
+        }
+
+    }
+}
+
+const DeleteThongBaoForUserService = async ({ id }) => {
+    try {
+
+        const thongBao = await db.ThongBaoToAdmin.findOne({
+            where: {
+                id
+            }
+        });
+
+        if (!thongBao) {
+            return {
+                error: true,
+                message: 'Thông Báo Không Tồn Tại !'
+            }
+        }
+
+        await db.ThongBaoToAdmin.destroy({
+            where: {
+                id
+            }
+        });
+
+        return {
+            error: false,
+            message: 'Xóa Thông Báo Thành Công !'
+        }
+
+    } catch (error) {
+        console.log(error);
+        return {
+            error: true,
+            message: 'Có Lỗi Xảy Ra !'
+        }
+
+    }
+}
+
 module.exports = {
     SignInService,
     LoginService,
@@ -543,5 +644,8 @@ module.exports = {
     GetInfoUpdateService,
     UpdateInfoUserService,
     ForgotPasswordService,
-    ResetPasswordService
+    ResetPasswordService,
+    AddThongBaoForUserService,
+    GetThongBaoForUserService,
+    DeleteThongBaoForUserService
 }

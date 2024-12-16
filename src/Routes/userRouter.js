@@ -14,7 +14,10 @@ const {
     GetInfoUpdateController,
     UpdateInfoUserController,
     ForgotPasswordController,
-    ResetPasswordController
+    ResetPasswordController,
+    AddThongBaoForUserController,
+    GetThongBaoForUserController,
+    DeleteThongBaoForUserController
 } = require('../Controllers/userController');
 const upload = require('../Config/UploadImage');
 const { authAccountMiddleware, authMiddleware } = require('../Middlewares/auth');
@@ -37,6 +40,9 @@ router.put('/updateInfoUser/:id', authMiddleware, UpdateInfoUserController);
 router.post('/forgot-password', ForgotPasswordController);
 router.post('/resetPassword', authAccountMiddleware, ResetPasswordController);
 
+router.post('/addThongBaoForUser', authMiddleware, AddThongBaoForUserController);
+router.get('/getThongBaoForUser', authAccountMiddleware, GetThongBaoForUserController);
+router.delete('/deleteThongBaoForUser', authAccountMiddleware, DeleteThongBaoForUserController);
 
 
 module.exports = router;

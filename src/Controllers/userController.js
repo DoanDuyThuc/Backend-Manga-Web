@@ -10,7 +10,10 @@ const {
     GetInfoUpdateService,
     UpdateInfoUserService,
     ForgotPasswordService,
-    ResetPasswordService
+    ResetPasswordService,
+    AddThongBaoForUserService,
+    GetThongBaoForUserService,
+    DeleteThongBaoForUserService
 } = require('../Services/userService');
 
 
@@ -251,6 +254,46 @@ const ResetPasswordController = async (req, res) => {
     return res.status(200).json(result);
 }
 
+const AddThongBaoForUserController = async (req, res) => {
+    const { content, idUser } = req.body;
+
+    if (!content) {
+        return res.status(400).json({ message: 'Không được để trống!' });
+    }
+
+    const result = await AddThongBaoForUserService({ idUser, content });
+
+    if (result.error) {
+        return res.status(400).json(result);
+    }
+
+    return res.status(200).json(result);
+}
+
+const GetThongBaoForUserController = async (req, res) => {
+    const { id } = req.user;
+
+    const result = await GetThongBaoForUserService({ id });
+
+    if (result.error) {
+        return res.status(400).json(result);
+    }
+
+    return res.status(200).json(result);
+}
+
+const DeleteThongBaoForUserController = async (req, res) => {
+    const { id } = req.query;
+
+    const result = await DeleteThongBaoForUserService({ id });
+
+    if (result.error) {
+        return res.status(400).json(result);
+    }
+
+    return res.status(200).json(result);
+}
+
 module.exports = {
     LoginController,
     SignInController,
@@ -265,5 +308,8 @@ module.exports = {
     GetInfoUpdateController,
     UpdateInfoUserController,
     ForgotPasswordController,
-    ResetPasswordController
+    ResetPasswordController,
+    AddThongBaoForUserController,
+    GetThongBaoForUserController,
+    DeleteThongBaoForUserController
 };

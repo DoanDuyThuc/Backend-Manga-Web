@@ -7,7 +7,7 @@ module.exports = {
       type: Sequelize.INTEGER,
       allowNull: true, // Cho phép null để tránh lỗi khóa ngoại
       references: {
-        model: 'user', // Tên bảng chính xác trong cơ sở dữ liệu
+        model: 'User', // Tên bảng chính xác trong cơ sở dữ liệu
         key: 'id'
       },
       onUpdate: 'CASCADE',

@@ -35,7 +35,7 @@ module.exports = {
         allowNull: false
       },
       truyen_motangan: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         allowNull: false
       },
       createdAt: {

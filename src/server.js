@@ -18,12 +18,21 @@ ConnectDb();
 
 const app = express()
 
+app.use((req, res, next) => {
+    res.removeHeader('Cross-Origin-Opener-Policy');
+    next();
+});
+
 //config
 // Cấu hình CORS(Cross-Origin Resource Sharing) 
 app.use(cors({
     origin: `${process.env.PORT_FRONTEND}`, // Cho phép truy cập từ frontend
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], // Cho phép các phương thức
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true // Nếu bạn sử dụng cookies hoặc headers đặc biệt
 }));
+
+app.options('*', cors());
 
 // Middleware helmet để thiết lập các tiêu đề HTTP bảo mật
 app.use(helmet());

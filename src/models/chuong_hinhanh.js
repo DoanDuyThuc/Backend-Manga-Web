@@ -33,6 +33,8 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'chuong_hinhanh',
+    tableName: 'chuong_hinhanh',
+
   });
   return chuong_hinhanh;
 };

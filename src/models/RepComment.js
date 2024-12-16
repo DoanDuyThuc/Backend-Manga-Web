@@ -44,6 +44,8 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'RepComment',
+    tableName: 'RepComment',
+
   });
   return RepComment;
 };
